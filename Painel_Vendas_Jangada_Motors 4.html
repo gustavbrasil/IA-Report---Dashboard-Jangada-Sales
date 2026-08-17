@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Vendas | Jangada Motors</title>
+<style>
+  :root{
+    --blue-dark:#0b3d91;
+    --blue-main:#1e6fd9;
+    --blue-light:#4f9cf0;
+    --blue-pale:#eaf2fd;
+    --teal:#17a2a2;
+    --teal-light:#5fd0d0;
+    --navy-text:#0f2544;
+    --gray-text:#5b6b7f;
+    --gray-bg:#f4f7fb;
+    --border-soft:#e3eaf3;
+    --card-shadow: 0 2px 10px rgba(15,37,68,0.08);
+    --green-trend:#1fae6e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--gray-bg);
+    color:var(--navy-text);
+    overflow-x:hidden;
+  }
+
+  /* ===================== HEADER ===================== */
+  .header{
+    background:linear-gradient(90deg,var(--blue-main),var(--blue-light));
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    padding:16px clamp(14px,3vw,32px);
+    box-shadow:0 2px 10px rgba(0,0,0,0.12);
+  }
+  .header-left{display:flex;align-items:center;gap:12px;}
+  .logo-text{font-size:clamp(15px,2vw,22px);font-weight:700;letter-spacing:0.5px;white-space:nowrap;}
+  .header-title{font-size:clamp(16px,2.4vw,26px);font-weight:700;text-align:center;flex:1;min-width:160px;}
+  .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+
+  .month-filter{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.4);
+    border-radius:8px;
+    padding:6px 10px;
+    font-size:12.5px;
+  }
+  .month-filter label{opacity:0.9;font-size:11.5px;}
+  .month-filter select{
+    background:rgba(255,255,255,0.92);
+    border:none;
+    border-radius:5px;
+    padding:4px 6px;
+    font-size:12.5px;
+    color:var(--navy-text);
+    font-weight:600;
+    cursor:pointer;
+    max-width:90px;
+  }
+  .reset-btn{
+    background:rgba(255,255,255,0.2);
+    border:1px solid rgba(255,255,255,0.5);
+    color:#fff;
+    border-radius:8px;
+    padding:7px 12px;
+    font-size:12px;
+    cursor:pointer;
+    font-weight:600;
+    transition:background 0.15s;
+    white-space:nowrap;
+  }
+  .reset-btn:hover{background:rgba(255,255,255,0.35);}
+
+  .profile-icon{
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(255,255,255,0.2);
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,0.4);
+    flex-shrink:0;
+  }
+
+  /* ===================== LAYOUT ===================== */
+  .container{padding:clamp(14px,2.5vw,24px) clamp(14px,3vw,32px);}
+
+  .kpi-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:22px;
+  }
+  .kpi-card{
+    background:#fff;
+    border-radius:14px;
+    box-shadow:var(--card-shadow);
+    padding:18px 20px;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    min-width:0;
+  }
+  .kpi-icon{
+    width:48px;height:48px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    color:#fff;
+  }
+  .kpi-icon.blue1{background:var(--blue-main);}
+  .kpi-icon.blue2{background:var(--blue-dark);}
+  .kpi-icon.blue3{background:var(--blue-light);}
+  .kpi-icon.teal{background:var(--teal);}
+
+  .kpi-content{display:flex;flex-direction:column;min-width:0;}
+  .kpi-value{font-size:clamp(18px,2.1vw,25px);font-weight:700;color:var(--navy-text);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kpi-label{font-size:12.5px;color:var(--gray-text);margin-top:2px;}
+  .kpi-trend{font-size:12px;color:var(--green-trend);font-weight:600;margin-top:6px;}
+
+  .charts-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  .chart-card{
+    background:#fff;
+    border-radius:14px;
+    box-shadow:var(--card-shadow);
+    padding:18px 20px;
+    min-width:0;
+  }
+  .chart-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .chart-title{font-size:15.5px;font-weight:700;color:var(--navy-text);}
+
+  .chart-filter select{
+    border:1px solid var(--border-soft);
+    background:var(--gray-bg);
+    color:var(--navy-text);
+    font-size:12px;
+    padding:5px 8px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .toggle-group{
+    display:flex;
+    background:var(--gray-bg);
+    border-radius:7px;
+    padding:3px;
+    gap:2px;
+  }
+  .toggle-btn{
+    border:none;
+    background:transparent;
+    padding:5px 10px;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--gray-text);
+    border-radius:5px;
+    cursor:pointer;
+    transition:all 0.15s;
+  }
+  .toggle-btn.active{
+    background:var(--blue-main);
+    color:#fff;
+  }
+
+  .chart-canvas-wrap{position:relative;width:100%;}
+  canvas{display:block;width:100%;}
+  #chartPagamento{width:100%;max-width:200px;flex-shrink:0;}
+
+  .donut-flex{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+  .donut-legend{display:flex;flex-direction:column;gap:10px;flex:1;min-width:150px;}
+  .legend-item{display:flex;align-items:center;justify-content:space-between;font-size:13px;gap:10px;}
+  .legend-left{display:flex;align-items:center;gap:8px;min-width:0;}
+  .legend-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+  .legend-value{font-weight:700;color:var(--navy-text);white-space:nowrap;}
+
+  .empty-msg{
+    text-align:center;
+    color:var(--gray-text);
+    font-size:13px;
+    padding:40px 0;
+  }
+
+  .footer-note{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--gray-text);
+    padding:16px 0 4px 0;
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width:1150px){
+    .charts-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:820px){
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+    .header{justify-content:center;text-align:center;}
+    .header-title{order:1;flex-basis:100%;}
+    .header-left{order:0;}
+    .header-right{order:2;flex-basis:100%;justify-content:center;}
+  }
+  @media (max-width:520px){
+    .kpi-row{grid-template-columns:1fr;}
+    .kpi-card{padding:14px 16px;}
+    .month-filter{flex-wrap:wrap;justify-content:center;}
+    .chart-header{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <svg width="38" height="38" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 42 C 8 42, 20 46, 32 46 C 44 46, 56 42, 56 42 L 52 50 C 52 50, 42 54, 32 54 C 22 54, 12 50, 12 50 Z" fill="#ffffff"/>
+      <path d="M32 8 L32 42" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M32 10 C 32 10, 46 20, 46 40 L 32 40 Z" fill="#ffffff" fill-opacity="0.85"/>
+    </svg>
+    <div class="logo-text">JANGADA MOTORS</div>
+  </div>
+  <div class="header-title">Painel de Vendas</div>
+  <div class="header-right">
+    <div class="month-filter">
+      <label>De</label>
+      <select id="monthFrom"></select>
+      <label>Até</label>
+      <select id="monthTo"></select>
+    </div>
+    <button class="reset-btn" id="resetBtn">Limpar filtros</button>
+    <div class="profile-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#fff" stroke-width="1.8"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-icon blue1">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.8"/><path d="M12 7v10M9.5 9.2c0-1.1 1.1-2 2.5-2s2.5.7 2.5 1.8c0 2.4-5 1.2-5 3.6 0 1.1 1.1 1.8 2.5 1.8s2.5-.9 2.5-2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value" id="kpiFaturamento">—</div>
+        <div class="kpi-label">Faturamento Total</div>
+        <div class="kpi-trend" id="kpiFaturamentoTrend">—</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon blue3">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M11 3l9 9-8 8-9-9V3h8z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle cx="8" cy="7" r="1.6" fill="#fff"/></svg>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value" id="kpiTicket">—</div>
+        <div class="kpi-label">Ticket Médio</div>
+        <div class="kpi-trend" id="kpiTicketTrend">—</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon blue2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 16l1.5-5.5A2 2 0 017.4 9h9.2a2 2 0 011.9 1.5L20 16" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="16" width="18" height="3.5" rx="1.2" stroke="#fff" stroke-width="1.6"/><circle cx="7.5" cy="19.7" r="1.3" fill="#fff"/><circle cx="16.5" cy="19.7" r="1.3" fill="#fff"/></svg>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value" id="kpiVendas">—</div>
+        <div class="kpi-label">Veículos Vendidos</div>
+        <div class="kpi-trend" id="kpiVendasTrend">—</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon teal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.1 6.5L12 17.3 6.2 20.5l1.1-6.5L2.5 9.4l6.6-.9L12 2.5z"/></svg>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value" id="kpiAvaliacao">—</div>
+        <div class="kpi-label">Avaliação Média (1–5)</div>
+        <div class="kpi-trend" id="kpiAvaliacaoTrend">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Evolução Mensal</div>
+        <div class="toggle-group" id="lineMetricToggle">
+          <button class="toggle-btn active" data-metric="valor">Faturamento</button>
+          <button class="toggle-btn" data-metric="qtd">Qtd. Vendas</button>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chartMensal" height="260"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Vendas por Vendedor</div>
+        <div class="chart-filter">
+          <select id="filterVendedorMarca"><option value="">Todas as marcas</option></select>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chartVendedor" height="260"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Forma de Pagamento</div>
+        <div class="chart-filter">
+          <select id="filterPagamentoCondicao">
+            <option value="">Todas as condições</option>
+          </select>
+        </div>
+      </div>
+      <div class="donut-flex">
+        <canvas id="chartPagamento" width="200" height="200"></canvas>
+        <div class="donut-legend" id="legendPagamento"></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Vendas por Marca</div>
+        <div class="chart-filter">
+          <select id="filterMarcaTipo">
+            <option value="">Todos os tipos</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chartMarca" height="280"></canvas></div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">Painel de Vendas · Jangada Motors — Base de dados: <span id="totalRegistrosFooter">190</span> registros (jan/2025 a jul/2026)</div>
+</div>
+
+<script>
+/* ===================== DADOS BRUTOS (embutidos no HTML) ===================== */
+const RAWDATA = {"raw": [{"d": "2025-01", "v": "Ana Beatriz Sales", "m": "Hyundai", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 50700.0, "av": 3}, {"d": "2025-01", "v": "Carlos Nogueira", "m": "Volkswagen", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 73400.0, "av": 5}, {"d": "2025-01", "v": "Marcos Vinícius", "m": "Chevrolet", "t": "Sedan", "c": "Novo", "p": "Consórcio", "val": 92900.0, "av": 4}, {"d": "2025-01", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "Sedan", "c": "Novo", "p": "Financiamento", "val": 118500.0, "av": 5}, {"d": "2025-01", "v": "Juliana Castro", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Consórcio", "val": 91100.0, "av": 4}, {"d": "2025-01", "v": "Patrícia Gomes", "m": "Honda", "t": "Sedan", "c": "Seminovo", "p": "Consórcio", "val": 74800.0, "av": 5}, {"d": "2025-01", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "Consórcio", "val": 56000.0, "av": 3}, {"d": "2025-01", "v": "Patrícia Gomes", "m": "Nissan", "t": "SUV", "c": "Seminovo", "p": "À vista", "val": 73700.0, "av": 3}, {"d": "2025-01", "v": "Carlos Nogueira", "m": "Hyundai", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 46600.0, "av": 4}, {"d": "2025-02", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 48800.0, "av": 4}, {"d": "2025-02", "v": "Fernanda Lima", "m": "Nissan", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 51300.0, "av": 5}, {"d": "2025-02", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 48400.0, "av": 4}, {"d": "2025-02", "v": "Diego Ferreira", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 89900.0, "av": 4}, {"d": "2025-02", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 56400.0, "av": 3}, {"d": "2025-02", "v": "Diego Ferreira", "m": "Toyota", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 79700.0, "av": 5}, {"d": "2025-02", "v": "Carlos Nogueira", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 68700.0, "av": 5}, {"d": "2025-02", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Hatch", "c": "Novo", "p": "Consórcio", "val": 76200.0, "av": 5}, {"d": "2025-02", "v": "Rafael Alencar", "m": "Chevrolet", "t": "Sedan", "c": "Seminovo", "p": "À vista", "val": 56600.0, "av": 3}, {"d": "2025-02", "v": "Marcos Vinícius", "m": "Jeep", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 133200.0, "av": 4}, {"d": "2025-03", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "Picape", "c": "Novo", "p": "À vista", "val": 97000.0, "av": 4}, {"d": "2025-03", "v": "Ana Beatriz Sales", "m": "Fiat", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 84900.0, "av": 3}, {"d": "2025-03", "v": "Marcos Vinícius", "m": "Hyundai", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 140200.0, "av": 3}, {"d": "2025-03", "v": "Ana Beatriz Sales", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Consórcio", "val": 87500.0, "av": 5}, {"d": "2025-03", "v": "Marcos Vinícius", "m": "Fiat", "t": "Picape", "c": "Novo", "p": "Financiamento", "val": 103100.0, "av": 4}, {"d": "2025-03", "v": "Fernanda Lima", "m": "Honda", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 81100.0, "av": 5}, {"d": "2025-03", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 65000.0, "av": 4}, {"d": "2025-03", "v": "Juliana Castro", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 40500.0, "av": 5}, {"d": "2025-03", "v": "Patrícia Gomes", "m": "Jeep", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 57500.0, "av": 4}, {"d": "2025-03", "v": "Marcos Vinícius", "m": "Volkswagen", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 71000.0, "av": 5}, {"d": "2025-03", "v": "Carlos Nogueira", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 74300.0, "av": 4}, {"d": "2025-03", "v": "Diego Ferreira", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 36900.0, "av": 5}, {"d": "2025-04", "v": "Diego Ferreira", "m": "Renault", "t": "Hatch", "c": "Novo", "p": "À vista", "val": 66600.0, "av": 4}, {"d": "2025-04", "v": "Patrícia Gomes", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 37800.0, "av": 5}, {"d": "2025-04", "v": "Carlos Nogueira", "m": "Toyota", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 181100.0, "av": 5}, {"d": "2025-04", "v": "Patrícia Gomes", "m": "Chevrolet", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 51300.0, "av": 5}, {"d": "2025-04", "v": "Fernanda Lima", "m": "Volkswagen", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 104800.0, "av": 5}, {"d": "2025-04", "v": "Ana Beatriz Sales", "m": "Chevrolet", "t": "Minivan", "c": "Seminovo", "p": "Financiamento", "val": 54500.0, "av": 5}, {"d": "2025-04", "v": "Fernanda Lima", "m": "Toyota", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 179700.0, "av": 5}, {"d": "2025-04", "v": "Fernanda Lima", "m": "Hyundai", "t": "SUV", "c": "Novo", "p": "Consórcio", "val": 134500.0, "av": 3}, {"d": "2025-04", "v": "Fernanda Lima", "m": "Chevrolet", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 144600.0, "av": 3}, {"d": "2025-05", "v": "Rafael Alencar", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 39500.0, "av": 3}, {"d": "2025-05", "v": "Diego Ferreira", "m": "Volkswagen", "t": "Picape", "c": "Seminovo", "p": "À vista", "val": 58500.0, "av": 4}, {"d": "2025-05", "v": "Juliana Castro", "m": "Chevrolet", "t": "Minivan", "c": "Seminovo", "p": "Consórcio", "val": 58200.0, "av": 5}, {"d": "2025-05", "v": "Marcos Vinícius", "m": "Volkswagen", "t": "Picape", "c": "Novo", "p": "Financiamento", "val": 101700.0, "av": 5}, {"d": "2025-05", "v": "Patrícia Gomes", "m": "Ford", "t": "Picape", "c": "Novo", "p": "Financiamento", "val": 257200.0, "av": 5}, {"d": "2025-05", "v": "Diego Ferreira", "m": "Hyundai", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 88500.0, "av": 5}, {"d": "2025-05", "v": "Rafael Alencar", "m": "Toyota", "t": "SUV", "c": "Novo", "p": "À vista", "val": 198800.0, "av": 5}, {"d": "2025-05", "v": "Juliana Castro", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 57600.0, "av": 4}, {"d": "2025-05", "v": "Marcos Vinícius", "m": "Volkswagen", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 54500.0, "av": 5}, {"d": "2025-05", "v": "Ana Beatriz Sales", "m": "Chevrolet", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 50200.0, "av": 5}, {"d": "2025-05", "v": "Juliana Castro", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Consórcio", "val": 51000.0, "av": 3}, {"d": "2025-06", "v": "Marcos Vinícius", "m": "Hyundai", "t": "Hatch", "c": "Seminovo", "p": "Consórcio", "val": 32600.0, "av": 4}, {"d": "2025-06", "v": "Rafael Alencar", "m": "Chevrolet", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 36000.0, "av": 5}, {"d": "2025-06", "v": "Juliana Castro", "m": "Volkswagen", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 88500.0, "av": 5}, {"d": "2025-06", "v": "Diego Ferreira", "m": "Nissan", "t": "SUV", "c": "Seminovo", "p": "Consórcio", "val": 78100.0, "av": 5}, {"d": "2025-06", "v": "Patrícia Gomes", "m": "Fiat", "t": "Sedan", "c": "Novo", "p": "Financiamento", "val": 94800.0, "av": 5}, {"d": "2025-06", "v": "Carlos Nogueira", "m": "Toyota", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 91000.0, "av": 3}, {"d": "2025-06", "v": "Fernanda Lima", "m": "Fiat", "t": "Sedan", "c": "Seminovo", "p": "Consórcio", "val": 49900.0, "av": 5}, {"d": "2025-06", "v": "Patrícia Gomes", "m": "Chevrolet", "t": "Minivan", "c": "Novo", "p": "Consórcio", "val": 120800.0, "av": 5}, {"d": "2025-06", "v": "Ana Beatriz Sales", "m": "Chevrolet", "t": "Minivan", "c": "Novo", "p": "Consórcio", "val": 120900.0, "av": 3}, {"d": "2025-06", "v": "Patrícia Gomes", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 32600.0, "av": 4}, {"d": "2025-07", "v": "Carlos Nogueira", "m": "Chevrolet", "t": "SUV", "c": "Seminovo", "p": "À vista", "val": 86000.0, "av": 4}, {"d": "2025-07", "v": "Patrícia Gomes", "m": "Honda", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 62200.0, "av": 4}, {"d": "2025-07", "v": "Diego Ferreira", "m": "Toyota", "t": "Picape", "c": "Novo", "p": "À vista", "val": 287400.0, "av": 4}, {"d": "2025-07", "v": "Ana Beatriz Sales", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "À vista", "val": 62600.0, "av": 4}, {"d": "2025-07", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "À vista", "val": 75900.0, "av": 5}, {"d": "2025-07", "v": "Rafael Alencar", "m": "Honda", "t": "Sedan", "c": "Novo", "p": "Consórcio", "val": 184600.0, "av": 5}, {"d": "2025-07", "v": "Rafael Alencar", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 26800.0, "av": 3}, {"d": "2025-08", "v": "Carlos Nogueira", "m": "Toyota", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 103200.0, "av": 4}, {"d": "2025-08", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 45400.0, "av": 3}, {"d": "2025-08", "v": "Juliana Castro", "m": "Hyundai", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 37400.0, "av": 4}, {"d": "2025-08", "v": "Ana Beatriz Sales", "m": "Chevrolet", "t": "Minivan", "c": "Seminovo", "p": "Financiamento", "val": 62900.0, "av": 3}, {"d": "2025-08", "v": "Fernanda Lima", "m": "Nissan", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 131800.0, "av": 3}, {"d": "2025-08", "v": "Rafael Alencar", "m": "Ford", "t": "Picape", "c": "Novo", "p": "Financiamento", "val": 261800.0, "av": 5}, {"d": "2025-08", "v": "Carlos Nogueira", "m": "Toyota", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 109800.0, "av": 5}, {"d": "2025-08", "v": "Diego Ferreira", "m": "Jeep", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 129500.0, "av": 4}, {"d": "2025-08", "v": "Fernanda Lima", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 43600.0, "av": 5}, {"d": "2025-08", "v": "Patrícia Gomes", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Consórcio", "val": 62200.0, "av": 5}, {"d": "2025-08", "v": "Carlos Nogueira", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 40200.0, "av": 4}, {"d": "2025-08", "v": "Diego Ferreira", "m": "Chevrolet", "t": "Hatch", "c": "Seminovo", "p": "Consórcio", "val": 52100.0, "av": 4}, {"d": "2025-08", "v": "Juliana Castro", "m": "Toyota", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 181300.0, "av": 4}, {"d": "2025-08", "v": "Ana Beatriz Sales", "m": "Fiat", "t": "Sedan", "c": "Seminovo", "p": "Consórcio", "val": 62200.0, "av": 5}, {"d": "2025-08", "v": "Juliana Castro", "m": "Chevrolet", "t": "Picape", "c": "Seminovo", "p": "Consórcio", "val": 170300.0, "av": 5}, {"d": "2025-09", "v": "Carlos Nogueira", "m": "Toyota", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 135600.0, "av": 5}, {"d": "2025-09", "v": "Fernanda Lima", "m": "Hyundai", "t": "SUV", "c": "Seminovo", "p": "Consórcio", "val": 55000.0, "av": 5}, {"d": "2025-09", "v": "Juliana Castro", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 39400.0, "av": 3}, {"d": "2025-09", "v": "Marcos Vinícius", "m": "Volkswagen", "t": "SUV", "c": "Seminovo", "p": "À vista", "val": 66800.0, "av": 5}, {"d": "2025-09", "v": "Fernanda Lima", "m": "Renault", "t": "Hatch", "c": "Novo", "p": "À vista", "val": 66800.0, "av": 4}, {"d": "2025-09", "v": "Fernanda Lima", "m": "Chevrolet", "t": "Minivan", "c": "Seminovo", "p": "Financiamento", "val": 71300.0, "av": 4}, {"d": "2025-09", "v": "Patrícia Gomes", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 28600.0, "av": 5}, {"d": "2025-09", "v": "Diego Ferreira", "m": "Volkswagen", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 94100.0, "av": 3}, {"d": "2025-09", "v": "Carlos Nogueira", "m": "Ford", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 167300.0, "av": 3}, {"d": "2025-09", "v": "Patrícia Gomes", "m": "Toyota", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 99100.0, "av": 4}, {"d": "2025-09", "v": "Rafael Alencar", "m": "Volkswagen", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 90100.0, "av": 5}, {"d": "2025-10", "v": "Fernanda Lima", "m": "Hyundai", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 85500.0, "av": 5}, {"d": "2025-10", "v": "Diego Ferreira", "m": "Chevrolet", "t": "Minivan", "c": "Novo", "p": "Financiamento", "val": 129000.0, "av": 5}, {"d": "2025-10", "v": "Juliana Castro", "m": "Hyundai", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 85000.0, "av": 5}, {"d": "2025-10", "v": "Ana Beatriz Sales", "m": "Volkswagen", "t": "SUV", "c": "Novo", "p": "Consórcio", "val": 153700.0, "av": 5}, {"d": "2025-10", "v": "Carlos Nogueira", "m": "Chevrolet", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 138600.0, "av": 4}, {"d": "2025-10", "v": "Fernanda Lima", "m": "Jeep", "t": "SUV", "c": "Seminovo", "p": "À vista", "val": 65200.0, "av": 3}, {"d": "2025-10", "v": "Juliana Castro", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 34300.0, "av": 5}, {"d": "2025-10", "v": "Juliana Castro", "m": "Nissan", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 70300.0, "av": 5}, {"d": "2025-10", "v": "Rafael Alencar", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 30100.0, "av": 4}, {"d": "2025-10", "v": "Marcos Vinícius", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 79500.0, "av": 4}, {"d": "2025-11", "v": "Patrícia Gomes", "m": "Fiat", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 70700.0, "av": 5}, {"d": "2025-11", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Picape", "c": "Novo", "p": "Financiamento", "val": 95800.0, "av": 4}, {"d": "2025-11", "v": "Marcos Vinícius", "m": "Toyota", "t": "Sedan", "c": "Seminovo", "p": "Consórcio", "val": 93400.0, "av": 5}, {"d": "2025-11", "v": "Fernanda Lima", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 42800.0, "av": 4}, {"d": "2025-11", "v": "Patrícia Gomes", "m": "Chevrolet", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 143700.0, "av": 4}, {"d": "2025-11", "v": "Ana Beatriz Sales", "m": "Renault", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 66300.0, "av": 4}, {"d": "2025-11", "v": "Fernanda Lima", "m": "Chevrolet", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 153900.0, "av": 5}, {"d": "2025-12", "v": "Diego Ferreira", "m": "Volkswagen", "t": "Sedan", "c": "Novo", "p": "Financiamento", "val": 111600.0, "av": 5}, {"d": "2025-12", "v": "Carlos Nogueira", "m": "Jeep", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 77700.0, "av": 5}, {"d": "2025-12", "v": "Rafael Alencar", "m": "Toyota", "t": "Sedan", "c": "Novo", "p": "Financiamento", "val": 167200.0, "av": 4}, {"d": "2025-12", "v": "Rafael Alencar", "m": "Fiat", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 51700.0, "av": 3}, {"d": "2025-12", "v": "Juliana Castro", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Consórcio", "val": 56300.0, "av": 3}, {"d": "2025-12", "v": "Patrícia Gomes", "m": "Chevrolet", "t": "Hatch", "c": "Seminovo", "p": "Consórcio", "val": 49400.0, "av": 3}, {"d": "2025-12", "v": "Marcos Vinícius", "m": "Ford", "t": "Picape", "c": "Novo", "p": "Consórcio", "val": 272100.0, "av": 5}, {"d": "2025-12", "v": "Carlos Nogueira", "m": "Honda", "t": "Sedan", "c": "Seminovo", "p": "Consórcio", "val": 76100.0, "av": 5}, {"d": "2025-12", "v": "Ana Beatriz Sales", "m": "Jeep", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 59000.0, "av": 3}, {"d": "2026-01", "v": "Patrícia Gomes", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "Consórcio", "val": 37500.0, "av": 3}, {"d": "2026-01", "v": "Rafael Alencar", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 46000.0, "av": 4}, {"d": "2026-01", "v": "Rafael Alencar", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 72600.0, "av": 5}, {"d": "2026-01", "v": "Marcos Vinícius", "m": "Volkswagen", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 52300.0, "av": 5}, {"d": "2026-01", "v": "Diego Ferreira", "m": "Toyota", "t": "Sedan", "c": "Novo", "p": "Consórcio", "val": 162800.0, "av": 5}, {"d": "2026-01", "v": "Fernanda Lima", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 49500.0, "av": 5}, {"d": "2026-01", "v": "Ana Beatriz Sales", "m": "Chevrolet", "t": "Minivan", "c": "Novo", "p": "Consórcio", "val": 128200.0, "av": 4}, {"d": "2026-01", "v": "Marcos Vinícius", "m": "Toyota", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 100300.0, "av": 5}, {"d": "2026-01", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 64500.0, "av": 5}, {"d": "2026-02", "v": "Carlos Nogueira", "m": "Chevrolet", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 119500.0, "av": 4}, {"d": "2026-02", "v": "Fernanda Lima", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 39100.0, "av": 5}, {"d": "2026-02", "v": "Carlos Nogueira", "m": "Toyota", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 139800.0, "av": 5}, {"d": "2026-02", "v": "Carlos Nogueira", "m": "Toyota", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 101800.0, "av": 5}, {"d": "2026-02", "v": "Ana Beatriz Sales", "m": "Volkswagen", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 45500.0, "av": 5}, {"d": "2026-02", "v": "Fernanda Lima", "m": "Chevrolet", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 182100.0, "av": 4}, {"d": "2026-02", "v": "Diego Ferreira", "m": "Chevrolet", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 46400.0, "av": 4}, {"d": "2026-02", "v": "Carlos Nogueira", "m": "Honda", "t": "Sedan", "c": "Seminovo", "p": "À vista", "val": 91600.0, "av": 4}, {"d": "2026-02", "v": "Ana Beatriz Sales", "m": "Nissan", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 73900.0, "av": 4}, {"d": "2026-02", "v": "Fernanda Lima", "m": "Ford", "t": "Picape", "c": "Novo", "p": "Financiamento", "val": 279100.0, "av": 4}, {"d": "2026-02", "v": "Fernanda Lima", "m": "Chevrolet", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 96000.0, "av": 3}, {"d": "2026-02", "v": "Diego Ferreira", "m": "Volkswagen", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 72300.0, "av": 4}, {"d": "2026-03", "v": "Juliana Castro", "m": "Volkswagen", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 144900.0, "av": 4}, {"d": "2026-03", "v": "Carlos Nogueira", "m": "Chevrolet", "t": "Minivan", "c": "Novo", "p": "Financiamento", "val": 117800.0, "av": 5}, {"d": "2026-03", "v": "Ana Beatriz Sales", "m": "Renault", "t": "Hatch", "c": "Novo", "p": "Consórcio", "val": 65300.0, "av": 3}, {"d": "2026-03", "v": "Ana Beatriz Sales", "m": "Hyundai", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 50500.0, "av": 5}, {"d": "2026-03", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 92800.0, "av": 3}, {"d": "2026-03", "v": "Diego Ferreira", "m": "Volkswagen", "t": "Sedan", "c": "Novo", "p": "À vista", "val": 111400.0, "av": 4}, {"d": "2026-03", "v": "Ana Beatriz Sales", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 63700.0, "av": 5}, {"d": "2026-03", "v": "Juliana Castro", "m": "Fiat", "t": "Sedan", "c": "Seminovo", "p": "À vista", "val": 46000.0, "av": 5}, {"d": "2026-03", "v": "Diego Ferreira", "m": "Chevrolet", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 49800.0, "av": 5}, {"d": "2026-03", "v": "Fernanda Lima", "m": "Jeep", "t": "SUV", "c": "Novo", "p": "Financiamento", "val": 140200.0, "av": 5}, {"d": "2026-03", "v": "Diego Ferreira", "m": "Toyota", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 104300.0, "av": 3}, {"d": "2026-03", "v": "Juliana Castro", "m": "Volkswagen", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 49600.0, "av": 5}, {"d": "2026-03", "v": "Rafael Alencar", "m": "Ford", "t": "Picape", "c": "Novo", "p": "À vista", "val": 262300.0, "av": 5}, {"d": "2026-03", "v": "Fernanda Lima", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "Consórcio", "val": 39200.0, "av": 4}, {"d": "2026-04", "v": "Carlos Nogueira", "m": "Volkswagen", "t": "Sedan", "c": "Seminovo", "p": "À vista", "val": 64200.0, "av": 3}, {"d": "2026-04", "v": "Ana Beatriz Sales", "m": "Chevrolet", "t": "Minivan", "c": "Seminovo", "p": "Financiamento", "val": 58300.0, "av": 3}, {"d": "2026-04", "v": "Rafael Alencar", "m": "Fiat", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 44900.0, "av": 5}, {"d": "2026-04", "v": "Juliana Castro", "m": "Fiat", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 34900.0, "av": 5}, {"d": "2026-05", "v": "Fernanda Lima", "m": "Chevrolet", "t": "Minivan", "c": "Novo", "p": "Financiamento", "val": 126400.0, "av": 5}, {"d": "2026-05", "v": "Patrícia Gomes", "m": "Hyundai", "t": "SUV", "c": "Seminovo", "p": "Consórcio", "val": 71800.0, "av": 5}, {"d": "2026-05", "v": "Patrícia Gomes", "m": "Jeep", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 105200.0, "av": 5}, {"d": "2026-05", "v": "Carlos Nogueira", "m": "Fiat", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 84800.0, "av": 4}, {"d": "2026-05", "v": "Rafael Alencar", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 38300.0, "av": 3}, {"d": "2026-05", "v": "Ana Beatriz Sales", "m": "Chevrolet", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 116200.0, "av": 3}, {"d": "2026-05", "v": "Carlos Nogueira", "m": "Volkswagen", "t": "SUV", "c": "Novo", "p": "Consórcio", "val": 153300.0, "av": 4}, {"d": "2026-05", "v": "Marcos Vinícius", "m": "Chevrolet", "t": "Minivan", "c": "Novo", "p": "Financiamento", "val": 123700.0, "av": 3}, {"d": "2026-05", "v": "Marcos Vinícius", "m": "Nissan", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 86200.0, "av": 5}, {"d": "2026-06", "v": "Juliana Castro", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "À vista", "val": 50800.0, "av": 5}, {"d": "2026-06", "v": "Patrícia Gomes", "m": "Fiat", "t": "Picape", "c": "Seminovo", "p": "À vista", "val": 68700.0, "av": 5}, {"d": "2026-06", "v": "Rafael Alencar", "m": "Chevrolet", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 56700.0, "av": 5}, {"d": "2026-06", "v": "Ana Beatriz Sales", "m": "Jeep", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 108200.0, "av": 5}, {"d": "2026-06", "v": "Diego Ferreira", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 41600.0, "av": 5}, {"d": "2026-06", "v": "Carlos Nogueira", "m": "Honda", "t": "Sedan", "c": "Novo", "p": "À vista", "val": 136700.0, "av": 5}, {"d": "2026-06", "v": "Carlos Nogueira", "m": "Renault", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 30600.0, "av": 4}, {"d": "2026-06", "v": "Diego Ferreira", "m": "Chevrolet", "t": "Minivan", "c": "Seminovo", "p": "Consórcio", "val": 74900.0, "av": 4}, {"d": "2026-06", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "Picape", "c": "Seminovo", "p": "Financiamento", "val": 53200.0, "av": 4}, {"d": "2026-06", "v": "Juliana Castro", "m": "Chevrolet", "t": "Sedan", "c": "Novo", "p": "À vista", "val": 91300.0, "av": 4}, {"d": "2026-06", "v": "Patrícia Gomes", "m": "Chevrolet", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 86500.0, "av": 5}, {"d": "2026-07", "v": "Fernanda Lima", "m": "Toyota", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 79100.0, "av": 5}, {"d": "2026-07", "v": "Fernanda Lima", "m": "Chevrolet", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 65500.0, "av": 5}, {"d": "2026-07", "v": "Marcos Vinícius", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "À vista", "val": 52500.0, "av": 5}, {"d": "2026-07", "v": "Juliana Castro", "m": "Volkswagen", "t": "Hatch", "c": "Seminovo", "p": "Financiamento", "val": 52600.0, "av": 4}, {"d": "2026-07", "v": "Juliana Castro", "m": "Fiat", "t": "Hatch", "c": "Novo", "p": "Consórcio", "val": 85500.0, "av": 5}, {"d": "2026-07", "v": "Patrícia Gomes", "m": "Volkswagen", "t": "Hatch", "c": "Novo", "p": "Financiamento", "val": 72800.0, "av": 5}, {"d": "2026-07", "v": "Diego Ferreira", "m": "Chevrolet", "t": "Sedan", "c": "Seminovo", "p": "À vista", "val": 43900.0, "av": 5}, {"d": "2026-07", "v": "Carlos Nogueira", "m": "Honda", "t": "Sedan", "c": "Seminovo", "p": "Financiamento", "val": 93100.0, "av": 4}, {"d": "2026-07", "v": "Fernanda Lima", "m": "Jeep", "t": "SUV", "c": "Seminovo", "p": "Financiamento", "val": 95400.0, "av": 5}, {"d": "2026-07", "v": "Ana Beatriz Sales", "m": "Toyota", "t": "Sedan", "c": "Novo", "p": "Financiamento", "val": 164700.0, "av": 3}, {"d": "2026-07", "v": "Carlos Nogueira", "m": "Fiat", "t": "Sedan", "c": "Novo", "p": "Financiamento", "val": 91600.0, "av": 4}], "months": ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"], "marcas": ["Chevrolet", "Fiat", "Ford", "Honda", "Hyundai", "Jeep", "Nissan", "Renault", "Toyota", "Volkswagen"], "tipos": ["Hatch", "Minivan", "Picape", "SUV", "Sedan"], "condicoes": ["Novo", "Seminovo"]};
+const RAW = RAWDATA.raw;          // array de vendas {d,v,m,t,c,p,val,av}
+const MONTHS = RAWDATA.months;    // lista de meses YYYY-MM ordenados
+const MARCAS = RAWDATA.marcas;
+const TIPOS = RAWDATA.tipos;
+const CONDICOES = RAWDATA.condicoes;
+
+/* ===================== ESTADO DOS FILTROS ===================== */
+const state = {
+  monthFrom: MONTHS[0],
+  monthTo: MONTHS[MONTHS.length-1],
+  lineMetric: 'valor',
+  vendedorMarca: '',
+  pagamentoCondicao: '',
+  marcaTipo: ''
+};
+
+/* ===================== HELPERS ===================== */
+function formatBRL(v){
+  return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0});
+}
+function formatNum(v, dec=0){
+  return v.toLocaleString('pt-BR', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+}
+function monthLabelPtBr(ym){
+  const [y,m] = ym.split('-');
+  const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  return meses[parseInt(m,10)-1] + '/' + y.slice(2);
+}
+function inMonthRange(d){
+  return d >= state.monthFrom && d <= state.monthTo;
+}
+function byMonthRange(){
+  return RAW.filter(r => inMonthRange(r.d));
+}
+
+/* ===================== POPULAR SELECTS ===================== */
+function populateMonthSelects(){
+  const selFrom = document.getElementById('monthFrom');
+  const selTo = document.getElementById('monthTo');
+  MONTHS.forEach(m=>{
+    const o1 = document.createElement('option'); o1.value=m; o1.textContent=monthLabelPtBr(m);
+    selFrom.appendChild(o1);
+    const o2 = document.createElement('option'); o2.value=m; o2.textContent=monthLabelPtBr(m);
+    selTo.appendChild(o2);
+  });
+  selFrom.value = state.monthFrom;
+  selTo.value = state.monthTo;
+}
+function populateFilterSelects(){
+  const selVendMarca = document.getElementById('filterVendedorMarca');
+  MARCAS.forEach(m=>{
+    const o = document.createElement('option'); o.value=m; o.textContent=m;
+    selVendMarca.appendChild(o);
+  });
+  const selCond = document.getElementById('filterPagamentoCondicao');
+  CONDICOES.forEach(c=>{
+    const o = document.createElement('option'); o.value=c; o.textContent=c;
+    selCond.appendChild(o);
+  });
+  const selTipo = document.getElementById('filterMarcaTipo');
+  TIPOS.forEach(t=>{
+    const o = document.createElement('option'); o.value=t; o.textContent=t;
+    selTipo.appendChild(o);
+  });
+}
+
+/* ===================== KPIs ===================== */
+function updateKPIs(){
+  const filtered = byMonthRange();
+  const total = filtered.length;
+  const fatTotal = filtered.reduce((s,r)=>s+r.val,0);
+  const ticket = total? fatTotal/total : 0;
+  const avalMedia = total? filtered.reduce((s,r)=>s+r.av,0)/total : 0;
+
+  document.getElementById('kpiFaturamento').textContent = formatBRL(fatTotal);
+  document.getElementById('kpiTicket').textContent = formatBRL(ticket);
+  document.getElementById('kpiVendas').textContent = formatNum(total);
+  document.getElementById('kpiAvaliacao').textContent = total? formatNum(avalMedia,2) : '—';
+  document.getElementById('totalRegistrosFooter').textContent = total;
+
+  const rangeLabel = monthLabelPtBr(state.monthFrom) + ' – ' + monthLabelPtBr(state.monthTo);
+  document.getElementById('kpiFaturamentoTrend').textContent = rangeLabel;
+  document.getElementById('kpiTicketTrend').textContent = rangeLabel;
+  document.getElementById('kpiVendasTrend').textContent = rangeLabel;
+  document.getElementById('kpiAvaliacaoTrend').textContent = rangeLabel;
+}
+
+/* ===================== PALETA ===================== */
+const PALETTE = ['#1e6fd9', '#0b3d91', '#4f9cf0', '#17a2a2', '#5fd0d0', '#8fc7f2', '#0d5aa7', '#2ea8a8', '#a9d6f5', '#093a70'];
+
+/* ===================== SILHUETA DE LOGO POR MARCA (cores autenticas) ===================== */
+/* Cada marca recebe um icone estilizado que remete ao formato e a cor
+   caracteristica de sua logomarca oficial (estilo flat/silhueta simplificada).
+   x,y = ponto central horizontal / base inferior do icone. w = largura do icone. */
+const BRAND_STYLE = {
+  'Volkswagen': {bg:'#001E50', fg:'#ffffff'},
+  'Chevrolet':  {bg:'#ffffff', fg:'#c9a13b', stroke:'#c9a13b'},
+  'Fiat':       {bg:'#8C1D2B', fg:'#ffffff'},
+  'Toyota':     {bg:'#ffffff', fg:'#eb0a1e', stroke:'#eb0a1e'},
+  'Hyundai':    {bg:'#00337A', fg:'#ffffff'},
+  'Honda':      {bg:'#c8102e', fg:'#ffffff'},
+  'Jeep':       {bg:'#0b3d24', fg:'#8fd694'},
+  'Nissan':     {bg:'#ffffff', fg:'#1a1a1a', stroke:'#1a1a1a'},
+  'Renault':    {bg:'#ffffff', fg:'#f2c94c', stroke:'#8a8a8a'},
+  'Ford':       {bg:'#00338d', fg:'#ffffff'}
+};
+
+function drawBrandIcon(ctx, brand, x, y, w, fallbackColor){
+  const size = w;
+  const r = size/2;
+  const midY = y - size/2;
+  const style = BRAND_STYLE[brand] || {bg:fallbackColor, fg:'#ffffff'};
+
+  ctx.save();
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+
+  switch(brand){
+    case 'Volkswagen': {
+      ctx.beginPath(); ctx.arc(x, midY, r*0.92, 0, 2*Math.PI);
+      ctx.fillStyle = style.bg; ctx.fill();
+      ctx.strokeStyle='#ffffff'; ctx.lineWidth=Math.max(size*0.05,1); ctx.stroke();
+      ctx.fillStyle = style.fg;
+      ctx.font = `bold ${Math.round(size*0.42)}px Arial`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('V', x-r*0.24, midY-r*0.06);
+      ctx.fillText('W', x+r*0.28, midY+r*0.28);
+      break;
+    }
+    case 'Chevrolet': {
+      const bw=size*0.98, bh=size*0.36;
+      ctx.fillStyle = style.fg;
+      ctx.beginPath();
+      ctx.moveTo(x-bw/2, midY-bh/2); ctx.lineTo(x, midY); ctx.lineTo(x-bw/2, midY+bh/2);
+      ctx.lineTo(x-bw*0.30, midY); ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x+bw/2, midY-bh/2); ctx.lineTo(x, midY); ctx.lineTo(x+bw/2, midY+bh/2);
+      ctx.lineTo(x+bw*0.30, midY); ctx.closePath(); ctx.fill();
+      break;
+    }
+    case 'Toyota': {
+      ctx.strokeStyle = style.stroke; ctx.lineWidth=Math.max(size*0.09,1.3);
+      ctx.beginPath(); ctx.ellipse(x, midY, r*0.95, r*0.62, 0, 0, 2*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(x, midY, r*0.34, r*0.62, 0, 0, 2*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(x, midY, r*0.62, r*0.20, 0, 0, 2*Math.PI); ctx.stroke();
+      break;
+    }
+    case 'Fiat': {
+      const rr = size*0.24;
+      ctx.fillStyle = style.bg;
+      roundRect(ctx, x-r*1.05, midY-r*0.62, r*2.10, r*1.24, rr);
+      ctx.fill();
+      ctx.fillStyle = style.fg;
+      ctx.font = `italic bold ${Math.round(size*0.32)}px Georgia, serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('FIAT', x, midY+1);
+      break;
+    }
+    case 'Renault': {
+      ctx.fillStyle = style.fg; ctx.strokeStyle = style.stroke; ctx.lineWidth=Math.max(size*0.06,1);
+      ctx.beginPath();
+      ctx.moveTo(x, midY-r); ctx.lineTo(x+r*0.85, midY);
+      ctx.lineTo(x, midY+r); ctx.lineTo(x-r*0.85, midY);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      break;
+    }
+    case 'Hyundai': {
+      ctx.fillStyle = style.bg;
+      ctx.beginPath(); ctx.ellipse(x, midY, r*0.95, r*0.62, 0, 0, 2*Math.PI); ctx.fill();
+      ctx.strokeStyle = style.fg; ctx.lineWidth=Math.max(size*0.1,1.5);
+      // "H" estilizado e inclinado, remetendo ao simbolo da Hyundai
+      ctx.beginPath();
+      ctx.moveTo(x-r*0.38, midY+r*0.34); ctx.lineTo(x-r*0.22, midY-r*0.34);
+      ctx.moveTo(x+r*0.38, midY-r*0.34); ctx.lineTo(x+r*0.22, midY+r*0.34);
+      ctx.moveTo(x-r*0.30, midY); ctx.lineTo(x+r*0.30, midY);
+      ctx.stroke();
+      break;
+    }
+    case 'Jeep': {
+      const gw=size*0.9, gh=size*0.5;
+      ctx.fillStyle = style.bg;
+      roundRect(ctx, x-gw/2, midY-gh/2, gw, gh, size*0.08); ctx.fill();
+      ctx.strokeStyle = style.fg; ctx.lineWidth=Math.max(size*0.055,1);
+      const slots=7;
+      for(let i=1;i<slots;i++){
+        const sx = x-gw/2 + gw*i/slots;
+        ctx.beginPath(); ctx.moveTo(sx, midY-gh/2+2); ctx.lineTo(sx, midY+gh/2-2); ctx.stroke();
+      }
+      break;
+    }
+    case 'Honda': {
+      const rr=size*0.16;
+      ctx.fillStyle = style.bg;
+      roundRect(ctx, x-r*0.85, midY-r*0.85, r*1.7, r*1.7, rr); ctx.fill();
+      ctx.strokeStyle = style.fg; ctx.lineWidth=Math.max(size*0.11,1.6);
+      ctx.beginPath();
+      ctx.moveTo(x-r*0.36, midY-r*0.4); ctx.lineTo(x-r*0.36, midY+r*0.4);
+      ctx.moveTo(x+r*0.36, midY-r*0.4); ctx.lineTo(x+r*0.36, midY+r*0.4);
+      ctx.moveTo(x-r*0.36, midY); ctx.lineTo(x+r*0.36, midY);
+      ctx.stroke();
+      break;
+    }
+    case 'Nissan': {
+      ctx.fillStyle = style.bg;
+      ctx.beginPath(); ctx.arc(x, midY, r*0.92, 0, 2*Math.PI); ctx.fill();
+      ctx.strokeStyle = style.fg; ctx.lineWidth=Math.max(size*0.07,1.2);
+      ctx.beginPath(); ctx.arc(x, midY, r*0.78, 0, 2*Math.PI); ctx.stroke();
+      ctx.fillStyle = style.fg;
+      ctx.fillRect(x-r*0.62, midY-r*0.15, r*1.24, r*0.30);
+      break;
+    }
+    case 'Ford': {
+      ctx.fillStyle = style.bg;
+      ctx.beginPath(); ctx.ellipse(x, midY, r*1.05, r*0.6, 0, 0, 2*Math.PI); ctx.fill();
+      ctx.strokeStyle='#ffffff'; ctx.lineWidth=Math.max(size*0.04,1); ctx.stroke();
+      ctx.fillStyle = style.fg;
+      ctx.font = `italic bold ${Math.round(size*0.3)}px Georgia, serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('Ford', x, midY+1);
+      break;
+    }
+    default: {
+      ctx.fillStyle = fallbackColor;
+      ctx.beginPath(); ctx.arc(x, midY, r*0.9, 0, 2*Math.PI); ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(size*0.5)}px Segoe UI`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(brand.charAt(0), x, midY+1);
+    }
+  }
+  ctx.restore();
+}
+
+/* ===================== CHART: LINHA (Faturamento/Qtd Mensal) ===================== */
+function drawLineChart(canvas, labels, values, isCurrency){
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width, H = rect.height || 260;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  if(values.length===0){
+    ctx.fillStyle='#5b6b7f'; ctx.font='13px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText('Sem dados para o período selecionado', W/2, H/2);
+    return;
+  }
+
+  const padL= isCurrency? 62:44, padR=16, padT=20, padB=38;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const maxV = Math.max(...values)*1.15 || 1;
+  const minV = 0;
+
+  ctx.strokeStyle='#e7edf5'; ctx.fillStyle='#5b6b7f'; ctx.font='11px Segoe UI';
+  const ySteps=5;
+  for(let i=0;i<=ySteps;i++){
+    const y = padT + plotH - (plotH*i/ySteps);
+    const val = maxV*i/ySteps;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.textAlign='right';
+    ctx.fillText(isCurrency? (val/1000).toFixed(0)+'k' : val.toFixed(0), padL-8, y+4);
+  }
+
+  const stepX = labels.length>1? plotW/(labels.length-1) : 0;
+  ctx.fillStyle='#5b6b7f'; ctx.font='10.5px Segoe UI';
+  const skip = labels.length>10? 3 : (labels.length>6? 2:1);
+  labels.forEach((lab,i)=>{
+    if(i%skip===0 || i===labels.length-1){
+      const x = padL + stepX*i;
+      ctx.save(); ctx.translate(x, H-padB+16); ctx.textAlign='center';
+      ctx.fillText(monthLabelPtBr(lab), 0, 0);
+      ctx.restore();
+    }
+  });
+
+  ctx.beginPath();
+  values.forEach((v,i)=>{
+    const x = padL + stepX*i;
+    const y = padT + plotH - (plotH*(v-minV)/(maxV-minV));
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.lineTo(padL+stepX*(values.length-1), padT+plotH);
+  ctx.lineTo(padL, padT+plotH);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0,padT,0,padT+plotH);
+  grad.addColorStop(0,'rgba(30,111,217,0.35)');
+  grad.addColorStop(1,'rgba(30,111,217,0.02)');
+  ctx.fillStyle=grad; ctx.fill();
+
+  ctx.beginPath();
+  values.forEach((v,i)=>{
+    const x = padL + stepX*i;
+    const y = padT + plotH - (plotH*(v-minV)/(maxV-minV));
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='#1e6fd9'; ctx.lineWidth=2.5; ctx.stroke();
+
+  values.forEach((v,i)=>{
+    const x = padL + stepX*i;
+    const y = padT + plotH - (plotH*(v-minV)/(maxV-minV));
+    ctx.beginPath(); ctx.arc(x,y,3.5,0,2*Math.PI);
+    ctx.fillStyle='#fff'; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle='#1e6fd9'; ctx.stroke();
+  });
+}
+
+/* ===================== CHART: BARRA HORIZONTAL (Vendedor) ===================== */
+function drawHBarChart(canvas, labels, values){
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width, H = Math.max(rect.height, labels.length*38+20);
+  canvas.style.height = H+'px';
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  if(labels.length===0){
+    ctx.fillStyle='#5b6b7f'; ctx.font='13px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText('Sem dados para o período selecionado', W/2, H/2);
+    return;
+  }
+
+  const padL=Math.min(140, Math.max(80, W*0.34)), padR=40, padT=10, padB=10;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const maxV = Math.max(...values)*1.15 || 1;
+  const gap = plotH/labels.length;
+  const barH = gap*0.6;
+
+  ctx.font='12px Segoe UI';
+  const maxLabelW = padL-16;
+  labels.forEach((lab,i)=>{
+    const y = padT + gap*i + gap/2;
+    const barW = plotW*(values[i]/maxV);
+
+    ctx.fillStyle='#0f2544'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    let displayLab = lab;
+    if(ctx.measureText(displayLab).width > maxLabelW){
+      while(displayLab.length>1 && ctx.measureText(displayLab+'…').width > maxLabelW){
+        displayLab = displayLab.slice(0,-1);
+      }
+      displayLab += '…';
+    }
+    ctx.fillText(displayLab, padL-12, y);
+
+    const color = PALETTE[i % PALETTE.length];
+    ctx.fillStyle=color;
+    roundRect(ctx, padL, y-barH/2, Math.max(barW,2), barH, 4);
+    ctx.fill();
+
+    ctx.fillStyle='#0f2544'; ctx.textAlign='left'; ctx.font='bold 12px Segoe UI';
+    ctx.fillText(values[i], padL+barW+8, y);
+    ctx.font='12px Segoe UI';
+  });
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  if(w<r*2) r=Math.max(w/2,0);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+/* ===================== CHART: BARRA VERTICAL (Marca) com silhueta ===================== */
+function drawVBarChart(canvas, labels, values){
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width, H = rect.height || 280;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  if(labels.length===0){
+    ctx.fillStyle='#5b6b7f'; ctx.font='13px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText('Sem dados para o período selecionado', W/2, H/2);
+    return;
+  }
+
+  const slotEstimate = (W-46)/labels.length;
+  const padB = slotEstimate < 62 ? 92 : 78;
+  const padL=36, padR=10, padT=26;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const maxV = Math.max(...values)*1.2 || 1;
+
+  ctx.strokeStyle='#e7edf5'; ctx.fillStyle='#5b6b7f'; ctx.font='10.5px Segoe UI';
+  const ySteps=5;
+  for(let i=0;i<=ySteps;i++){
+    const y = padT + plotH - (plotH*i/ySteps);
+    const val = maxV*i/ySteps;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.textAlign='right';
+    ctx.fillText(val.toFixed(0), padL-6, y+4);
+  }
+
+  const slot = plotW/labels.length;
+  const barW = Math.min(slot*0.55, 46);
+  const iconW = Math.min(slot*0.56, 32);
+  const tight = slot < 62; // espaço apertado -> rotacionar labels
+
+  labels.forEach((lab,i)=>{
+    const x = padL + slot*i + (slot-barW)/2;
+    const barH = plotH*(values[i]/maxV);
+    const y = padT + plotH - barH;
+    const color = PALETTE[i % PALETTE.length];
+    ctx.fillStyle = color;
+    roundRect(ctx, x, y, barW, Math.max(barH,2), 4);
+    ctx.fill();
+
+    ctx.fillStyle='#0f2544'; ctx.textAlign='center'; ctx.font='bold 12px Segoe UI';
+    ctx.fillText(values[i], x+barW/2, y-6);
+
+    // silhueta da logo da marca, com espaco de respiro abaixo do eixo (sem sobrepor a barra)
+    const iconGap = 9;
+    const iconBaselineY = padT + plotH + iconGap + iconW;
+    drawBrandIcon(ctx, lab, padL+slot*i+slot/2, iconBaselineY, iconW, color);
+
+    // nome da marca abaixo do icone (rotacionado se espaço apertado)
+    ctx.font='10.5px Segoe UI'; ctx.fillStyle='#5b6b7f';
+    ctx.save();
+    if(tight){
+      ctx.translate(padL+slot*i+slot/2+4, iconBaselineY+12);
+      ctx.rotate(-Math.PI/4);
+      ctx.textAlign='right';
+      ctx.fillText(lab, 0, 0);
+    } else {
+      ctx.translate(padL+slot*i+slot/2, iconBaselineY+16);
+      ctx.textAlign='center';
+      ctx.fillText(lab, 0, 0);
+    }
+    ctx.restore();
+  });
+}
+
+/* ===================== CHART: DONUT (Forma de Pagamento) ===================== */
+function drawDonutChart(canvas, labels, values){
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width || 200, H = rect.height || 200;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  const total = values.reduce((a,b)=>a+b,0);
+  if(total===0){
+    ctx.fillStyle='#5b6b7f'; ctx.font='12px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText('Sem dados', W/2, H/2);
+    return;
+  }
+
+  const cx=W/2, cy=H/2, rOuter=Math.min(W,H)/2-6, rInner=rOuter*0.58;
+  let startAngle=-Math.PI/2;
+
+  values.forEach((v,i)=>{
+    const angle = (v/total)*2*Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,rOuter,startAngle,startAngle+angle);
+    ctx.closePath();
+    ctx.fillStyle = PALETTE[i % PALETTE.length];
+    ctx.fill();
+    startAngle += angle;
+  });
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,rInner,0,2*Math.PI);
+  ctx.fillStyle='#ffffff';
+  ctx.fill();
+
+  ctx.fillStyle='#0f2544'; ctx.textAlign='center';
+  ctx.font='bold 19px Segoe UI';
+  ctx.fillText(total, cx, cy-2);
+  ctx.font='10.5px Segoe UI'; ctx.fillStyle='#5b6b7f';
+  ctx.fillText('vendas', cx, cy+15);
+}
+
+function buildLegend(containerId, labels, values){
+  const total = values.reduce((a,b)=>a+b,0);
+  const container = document.getElementById(containerId);
+  container.innerHTML='';
+  if(total===0){
+    container.innerHTML = '<div class="empty-msg">Sem dados para os filtros selecionados</div>';
+    return;
+  }
+  labels.forEach((lab,i)=>{
+    const pct = (values[i]/total*100).toFixed(1).replace('.',',');
+    const item = document.createElement('div');
+    item.className='legend-item';
+    item.innerHTML = `
+      <div class="legend-left">
+        <span class="legend-dot" style="background:${PALETTE[i % PALETTE.length]}"></span>
+        <span>${lab}</span>
+      </div>
+      <span class="legend-value">${values[i]} (${pct}%)</span>
+    `;
+    container.appendChild(item);
+  });
+}
+
+/* ===================== AGREGACOES DINAMICAS ===================== */
+function aggMonthly(filtered, metric){
+  const map = {};
+  MONTHS.forEach(m=>{ if(inMonthRange(m)) map[m]=0; });
+  filtered.forEach(r=>{
+    if(map[r.d]===undefined) return;
+    map[r.d] += metric==='valor'? r.val : 1;
+  });
+  const labels = Object.keys(map);
+  const values = labels.map(l=>map[l]);
+  return {labels, values};
+}
+
+function aggVendedor(filtered){
+  const map = {};
+  filtered.forEach(r=>{ map[r.v] = (map[r.v]||0)+1; });
+  const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  return {labels: entries.map(e=>e[0]), values: entries.map(e=>e[1])};
+}
+
+function aggPagamento(filtered){
+  const map = {};
+  filtered.forEach(r=>{ map[r.p] = (map[r.p]||0)+1; });
+  const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  return {labels: entries.map(e=>e[0]), values: entries.map(e=>e[1])};
+}
+
+function aggMarca(filtered){
+  const map = {};
+  filtered.forEach(r=>{ map[r.m] = (map[r.m]||0)+1; });
+  const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  return {labels: entries.map(e=>e[0]), values: entries.map(e=>e[1])};
+}
+
+/* ===================== RENDER ===================== */
+function renderAll(){
+  updateKPIs();
+  const baseFiltered = byMonthRange();
+
+  // Chart 1: Evolução Mensal
+  const monthly = aggMonthly(baseFiltered, state.lineMetric);
+  drawLineChart(document.getElementById('chartMensal'), monthly.labels, monthly.values, state.lineMetric==='valor');
+
+  // Chart 2: Vendedor (filtro adicional por marca)
+  let vendData = baseFiltered;
+  if(state.vendedorMarca) vendData = vendData.filter(r=>r.m===state.vendedorMarca);
+  const vend = aggVendedor(vendData);
+  drawHBarChart(document.getElementById('chartVendedor'), vend.labels, vend.values);
+
+  // Chart 3: Forma de Pagamento (filtro adicional por condicao)
+  let pagData = baseFiltered;
+  if(state.pagamentoCondicao) pagData = pagData.filter(r=>r.c===state.pagamentoCondicao);
+  const pag = aggPagamento(pagData);
+  drawDonutChart(document.getElementById('chartPagamento'), pag.labels, pag.values);
+  buildLegend('legendPagamento', pag.labels, pag.values);
+
+  // Chart 4: Marca (filtro adicional por tipo)
+  let marcaData = baseFiltered;
+  if(state.marcaTipo) marcaData = marcaData.filter(r=>r.t===state.marcaTipo);
+  const marca = aggMarca(marcaData);
+  drawVBarChart(document.getElementById('chartMarca'), marca.labels, marca.values);
+}
+
+/* ===================== EVENTOS ===================== */
+function setupEvents(){
+  document.getElementById('monthFrom').addEventListener('change', (e)=>{
+    state.monthFrom = e.target.value;
+    if(state.monthFrom > state.monthTo){ state.monthTo = state.monthFrom; document.getElementById('monthTo').value = state.monthTo; }
+    renderAll();
+  });
+  document.getElementById('monthTo').addEventListener('change', (e)=>{
+    state.monthTo = e.target.value;
+    if(state.monthTo < state.monthFrom){ state.monthFrom = state.monthTo; document.getElementById('monthFrom').value = state.monthFrom; }
+    renderAll();
+  });
+
+  document.querySelectorAll('#lineMetricToggle .toggle-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('#lineMetricToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      state.lineMetric = btn.dataset.metric;
+      renderAll();
+    });
+  });
+
+  document.getElementById('filterVendedorMarca').addEventListener('change', (e)=>{
+    state.vendedorMarca = e.target.value;
+    renderAll();
+  });
+  document.getElementById('filterPagamentoCondicao').addEventListener('change', (e)=>{
+    state.pagamentoCondicao = e.target.value;
+    renderAll();
+  });
+  document.getElementById('filterMarcaTipo').addEventListener('change', (e)=>{
+    state.marcaTipo = e.target.value;
+    renderAll();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    state.monthFrom = MONTHS[0];
+    state.monthTo = MONTHS[MONTHS.length-1];
+    state.lineMetric = 'valor';
+    state.vendedorMarca = '';
+    state.pagamentoCondicao = '';
+    state.marcaTipo = '';
+
+    document.getElementById('monthFrom').value = state.monthFrom;
+    document.getElementById('monthTo').value = state.monthTo;
+    document.getElementById('filterVendedorMarca').value = '';
+    document.getElementById('filterPagamentoCondicao').value = '';
+    document.getElementById('filterMarcaTipo').value = '';
+    document.querySelectorAll('#lineMetricToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('#lineMetricToggle .toggle-btn[data-metric="valor"]').classList.add('active');
+
+    renderAll();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 150);
+  });
+}
+
+/* ===================== INIT ===================== */
+populateMonthSelects();
+populateFilterSelects();
+setupEvents();
+renderAll();
+</script>
+</body>
+</html>
